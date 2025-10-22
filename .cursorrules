@@ -1,0 +1,82 @@
+# Cursor Rules for Library Management System
+
+## Development Guidelines
+
+### TypeScript & Code Quality
+- Always use TypeScript with explicit interfaces and types
+- Define interfaces for all data structures, API responses, and component props
+- Use strict TypeScript configuration with no implicit any
+- Prefer type safety over convenience - use proper typing everywhere
+- Use enums for constants and status values
+
+### Database & Backend
+- Use Mongoose for all MongoDB operations
+- Define comprehensive schemas with proper validation
+- Include timestamps (createdAt, updatedAt) for all models
+- Use proper reference relationships between models
+- Implement proper error handling for all database operations
+- Use transactions for multi-document operations
+
+### Next.js & Architecture
+- Prefer Next.js App Router and Server Components by default
+- Use Client Components only when necessary (interactivity, hooks, browser APIs)
+- Implement proper error boundaries and loading states
+- Use Next.js built-in features (Image, Link, etc.) over custom implementations
+- Follow Next.js best practices for performance and SEO
+
+### Styling & UI/UX
+- Use Tailwind CSS and next-themes for all styling
+- Ensure dark/light mode works across all pages and components
+- UI/UX should be inspired by Notion (clean, minimal, intuitive)
+- Use consistent spacing, typography, and color schemes
+- Implement responsive design for all screen sizes
+- Follow accessibility guidelines (WCAG 2.1 AA)
+
+### Component Design
+- Create reusable, composable components
+- Use shadcn/ui or other free open-source component libraries
+- Favor clarity and ease of use in component APIs
+- Implement proper prop validation and default values
+- Use proper naming conventions (PascalCase for components, camelCase for functions)
+
+### Forms & Validation
+- Implement comprehensive error handling and validation for every form
+- Use client-side validation for UX and server-side validation for security
+- Provide clear, actionable error messages
+- Use proper form state management
+- Implement loading states for form submissions
+
+### Authentication & Security
+- Use next-auth for authentication with Email/Password
+- Implement proper role-based access control
+- Validate all user inputs on both client and server
+- Use proper password hashing (bcryptjs)
+- Implement proper session management
+
+### API Design
+- Create RESTful API routes with proper HTTP methods
+- Use consistent response formats with proper error handling
+- Implement proper status codes and error messages
+- Use proper request validation and sanitization
+- Document API endpoints and their usage
+
+### Performance & Optimization
+- Implement proper loading states and error boundaries
+- Use Next.js Image component for optimized images
+- Implement proper caching strategies
+- Use React.memo and useMemo for performance optimization
+- Minimize bundle size and optimize for Core Web Vitals
+
+### Code Organization
+- Keep components small and focused on single responsibility
+- Use proper folder structure and naming conventions
+- Separate business logic from UI components
+- Use custom hooks for reusable logic
+- Implement proper error handling at all levels
+
+### Testing & Quality
+- Write meaningful tests for critical functionality
+- Use proper TypeScript types to catch errors at compile time
+- Implement proper error logging and monitoring
+- Use ESLint and Prettier for code consistency
+- Follow consistent code formatting and style guidelines
