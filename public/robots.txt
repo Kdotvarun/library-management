@@ -1,0 +1,13 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /signin
+Disallow: /unauthorized
+
+# Host
+Host: http://localhost:3001
+
+# Sitemaps
+Sitemap: http://localhost:3001/sitemap.xml

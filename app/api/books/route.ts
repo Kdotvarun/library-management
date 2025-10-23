@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       : {};
     
     const skip = (pagination.page - 1) * pagination.limit;
-    const sort: any = {};
+    const sort: Record<string, 1 | -1> = {};
     sort[pagination.sortBy] = pagination.sortOrder === 'asc' ? 1 : -1;
     
     const [books, total] = await Promise.all([

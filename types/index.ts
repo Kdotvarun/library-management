@@ -97,8 +97,8 @@ export interface ApiResponse<T> {
 export interface PaginationParams {
   page: number;
   limit: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
 }
 
 export interface PaginatedResponse<T> {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import AdminLayout from '@/components/AdminLayout';
 import { useToast } from '@/components/Toast';
 import { AvailabilityStatus, BorrowRequestStatus, ReservationStatus } from '@/types';
@@ -398,10 +399,12 @@ export default function AdminDashboard() {
                   <tr key={book._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap">
                       {book.coverImageURL ? (
-                        <img
+                        <Image
                           className="h-10 w-10 rounded-lg object-cover"
                           src={book.coverImageURL}
                           alt={book.title}
+                          width={40}
+                          height={40}
                         />
                       ) : (
                         <div className="h-10 w-10 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">

@@ -33,7 +33,7 @@ TableSchema.pre('save', function(next) {
     return next(new Error('Table must have at least one seat'));
   }
   
-  const uniqueSeats = [...new Set(this.seats)];
+  const uniqueSeats = Array.from(new Set(this.seats));
   if (uniqueSeats.length !== this.seats.length) {
     return next(new Error('Seat numbers must be unique'));
   }

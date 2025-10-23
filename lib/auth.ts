@@ -3,6 +3,21 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from '@/lib/mongodb';
 import User, { UserRole } from '@/models/User';
 
+// Validate required environment variables
+if (!process.env.NEXTAUTH_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('NEXTAUTH_SECRET environment variable is required');
+  }
+  console.warn('NEXTAUTH_SECRET not set, using placeholder for build');
+}
+
+if (!process.env.NEXTAUTH_URL) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('NEXTAUTH_URL environment variable is required');
+  }
+  console.warn('NEXTAUTH_URL not set, using placeholder for build');
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
