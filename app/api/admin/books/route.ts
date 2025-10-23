@@ -1,19 +1,70 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongodb';
 import Book from '@/models/Book';
-import { AvailabilityStatus } from '@/types';
-import { createApiResponse, handleApiError } from '@/lib/api-utils';
+import { authOptions } from '@/lib/auth';
+import { createApiResponse, handleApiError, validatePaginationParams } from '@/lib/api-utils';
 
-export async function GET() {
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id || session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        createApiResponse(null, 'Unauthorized', false),
+        { status: 401 }
+      );
+    }
+
     await connectDB();
     
-    const books = await Book.find()
-      .populate('addedBy', 'name email')
-      .sort({ createdAt: -1 })
-      .lean();
-
-    return NextResponse.json(createApiResponse(books));
+    const { searchParams } = new URL(request.url);
+    const pagination = validatePaginationParams({
+      page: searchParams.get('page'),
+      limit: searchParams.get('limit'),
+      sortBy: searchParams.get('sortBy'),
+      sortOrder: searchParams.get('sortOrder'),
+    });
+    
+    const query = searchParams.get('search') 
+      ? {
+          $or: [
+            { title: { $regex: searchParams.get('search'), $options: 'i' } },
+            { author: { $regex: searchParams.get('search'), $options: 'i' } },
+            { genre: { $regex: searchParams.get('search'), $options: 'i' } },
+          ],
+        }
+      : {};
+    
+    const skip = (pagination.page - 1) * pagination.limit;
+    const sort: Record<string, 1 | -1> = {};
+    sort[pagination.sortBy] = pagination.sortOrder === 'asc' ? 1 : -1;
+    
+    const [books, total] = await Promise.all([
+      Book.find(query)
+        .populate('addedBy', 'name email')
+        .sort(sort)
+        .skip(skip)
+        .limit(pagination.limit)
+        .lean(),
+      Book.countDocuments(query),
+    ]);
+    
+    return NextResponse.json({
+      success: true,
+      data: books,
+      pagination: {
+        page: pagination.page,
+        limit: pagination.limit,
+        total,
+        totalPages: Math.ceil(total / pagination.limit),
+        hasNext: pagination.page < Math.ceil(total / pagination.limit),
+        hasPrev: pagination.page > 1,
+      },
+    });
   } catch (error) {
     console.error('Error fetching books:', error);
     return NextResponse.json(handleApiError(error), { status: 500 });
@@ -22,75 +73,27 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id || session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        createApiResponse(null, 'Unauthorized', false),
+        { status: 401 }
+      );
+    }
+
     await connectDB();
     
     const body = await request.json();
-    const { title, author, genre, description, coverImageURL, addedBy } = body;
-
     const book = new Book({
-      title,
-      author,
-      genre,
-      description,
-      coverImageURL,
-      availabilityStatus: AvailabilityStatus.AVAILABLE,
-      addedBy,
+      ...body,
+      addedBy: session.user.id,
     });
-
     await book.save();
-    await book.populate('addedBy', 'name email');
-
+    
     return NextResponse.json(createApiResponse(book, 'Book created successfully'), { status: 201 });
   } catch (error) {
     console.error('Error creating book:', error);
-    return NextResponse.json(handleApiError(error), { status: 500 });
-  }
-}
-
-export async function PATCH(request: NextRequest) {
-  try {
-    await connectDB();
-    
-    const body = await request.json();
-    const { id, availabilityStatus } = body;
-
-    const book = await Book.findByIdAndUpdate(
-      id,
-      { availabilityStatus },
-      { new: true }
-    ).populate('addedBy', 'name email');
-
-    if (!book) {
-      return NextResponse.json(createApiResponse(null, 'Book not found'), { status: 404 });
-    }
-
-    return NextResponse.json(createApiResponse(book, 'Book updated successfully'));
-  } catch (error) {
-    console.error('Error updating book:', error);
-    return NextResponse.json(handleApiError(error), { status: 500 });
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  try {
-    await connectDB();
-    
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(createApiResponse(null, 'Book ID is required'), { status: 400 });
-    }
-
-    const book = await Book.findByIdAndDelete(id);
-
-    if (!book) {
-      return NextResponse.json(createApiResponse(null, 'Book not found'), { status: 404 });
-    }
-
-    return NextResponse.json(createApiResponse(null, 'Book deleted successfully'));
-  } catch (error) {
-    console.error('Error deleting book:', error);
     return NextResponse.json(handleApiError(error), { status: 500 });
   }
 }

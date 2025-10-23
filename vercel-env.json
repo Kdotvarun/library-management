@@ -1,0 +1,6 @@
+{
+  "MONGODB_URI": "mongodb+srv://kvarun206cr_db_user:kvarun_200630@library-management-clus.bvs4xdj.mongodb.net/?retryWrites=true&w=majority&appName=library-management-cluster",
+  "NEXTAUTH_SECRET": "your-super-secret-key-for-nextauth-jwt-tokens-change-this-in-production-12345",
+  "NEXTAUTH_URL": "https://library-management-app-chi.vercel.app",
+  "NODE_ENV": "production"
+}
