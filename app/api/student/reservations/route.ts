@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
+      console.log('❌ No session or user ID');
       return NextResponse.json(
         createApiResponse(null, 'Unauthorized', false),
         { status: 401 }
@@ -49,10 +50,12 @@ export async function POST(request: NextRequest) {
     await connectDB();
     
     const body = await request.json();
+    console.log('📝 Request body:', body);
     const { bookId, tableId, seatNumber, reservedDate, timeSlot } = body;
 
     // Validate required fields
     if (!bookId || !tableId || !seatNumber || !reservedDate || !timeSlot) {
+      console.log('❌ Missing required fields:', { bookId, tableId, seatNumber, reservedDate, timeSlot });
       return NextResponse.json(
         createApiResponse(null, 'Missing required fields', false),
         { status: 400 }
@@ -86,14 +89,16 @@ export async function POST(request: NextRequest) {
       status: 'PENDING'
     });
 
+    console.log('💾 Saving reservation:', reservation);
     await reservation.save();
+    console.log('✅ Reservation saved successfully');
 
     return NextResponse.json(
       createApiResponse(reservation, 'Reservation created successfully'),
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error creating reservation:', error);
+    console.error('❌ Error creating reservation:', error);
     return NextResponse.json(handleApiError(error), { status: 500 });
   }
 }

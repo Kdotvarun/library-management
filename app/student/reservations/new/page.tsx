@@ -73,6 +73,8 @@ export default function NewReservationPage() {
     e.preventDefault();
     setSubmitting(true);
 
+    console.log('📝 Form data being submitted:', formData);
+
     try {
       const response = await fetch('/api/student/reservations', {
         method: 'POST',
@@ -82,15 +84,18 @@ export default function NewReservationPage() {
         body: JSON.stringify(formData),
       });
 
+      console.log('📡 Response status:', response.status);
+      const responseData = await response.json();
+      console.log('📡 Response data:', responseData);
+
       if (response.ok) {
         addToast({ type: 'success', title: 'Reservation created successfully' });
         router.push('/student/reservations');
       } else {
-        const error = await response.json();
-        addToast({ type: 'error', title: error.message || 'Failed to create reservation' });
+        addToast({ type: 'error', title: responseData.message || 'Failed to create reservation' });
       }
     } catch (error) {
-      console.error('Error creating reservation:', error);
+      console.error('❌ Error creating reservation:', error);
       addToast({ type: 'error', title: 'Error creating reservation' });
     } finally {
       setSubmitting(false);

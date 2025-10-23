@@ -15,7 +15,7 @@ const navigation = [
   { name: 'Books', href: '/admin/books', icon: '📚' },
   { name: 'Borrow Requests', href: '/admin/borrow-requests', icon: '📖' },
   { name: 'Table Reservations', href: '/admin/reservations', icon: '📅' },
-  { name: 'Add Book', href: '/admin/add-book', icon: '➕' },
+  { name: 'Statistics', href: '/admin/stats', icon: '📈' },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
