@@ -75,7 +75,15 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
+    console.log('🔐 Session check:', { 
+      hasSession: !!session, 
+      hasUser: !!session?.user, 
+      userId: session?.user?.id, 
+      role: session?.user?.role 
+    });
+    
     if (!session?.user?.id || session.user.role !== 'ADMIN') {
+      console.log('❌ Unauthorized access attempt');
       return NextResponse.json(
         createApiResponse(null, 'Unauthorized', false),
         { status: 401 }
@@ -85,15 +93,20 @@ export async function POST(request: NextRequest) {
     await connectDB();
     
     const body = await request.json();
+    console.log('📝 Request body:', body);
+    
     const book = new Book({
       ...body,
       addedBy: session.user.id,
     });
+    
+    console.log('💾 Saving book:', book);
     await book.save();
+    console.log('✅ Book saved successfully');
     
     return NextResponse.json(createApiResponse(book, 'Book created successfully'), { status: 201 });
   } catch (error) {
-    console.error('Error creating book:', error);
+    console.error('❌ Error creating book:', error);
     return NextResponse.json(handleApiError(error), { status: 500 });
   }
 }

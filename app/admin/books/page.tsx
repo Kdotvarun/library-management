@@ -71,9 +71,13 @@ export default function AdminBooksPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('📝 Form data being submitted:', formData);
+    
     try {
       const url = editingBook ? `/api/admin/books/${editingBook._id}` : '/api/admin/books';
       const method = editingBook ? 'PUT' : 'POST';
+      
+      console.log('📡 Making request to:', url, 'with method:', method);
       
       const response = await fetch(url, {
         method,
@@ -82,6 +86,10 @@ export default function AdminBooksPage() {
         },
         body: JSON.stringify(formData),
       });
+
+      console.log('📡 Response status:', response.status);
+      const responseData = await response.json();
+      console.log('📡 Response data:', responseData);
 
       if (response.ok) {
         addToast({
@@ -93,11 +101,10 @@ export default function AdminBooksPage() {
         resetForm();
         fetchBooks();
       } else {
-        const error = await response.json();
-        addToast({ type: 'error', title: error.message || 'Failed to save book' });
+        addToast({ type: 'error', title: responseData.message || 'Failed to save book' });
       }
     } catch (error) {
-      console.error('Error saving book:', error);
+      console.error('❌ Error saving book:', error);
       addToast({ type: 'error', title: 'Error saving book' });
     }
   };

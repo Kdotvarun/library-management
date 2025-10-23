@@ -56,6 +56,8 @@ export default function BooksPage() {
   }, [fetchBooks]);
 
   const handleBorrowRequest = async (bookId: string) => {
+    console.log('📚 Requesting to borrow book:', bookId);
+    
     try {
       const response = await fetch('/api/books/borrow-request', {
         method: 'POST',
@@ -65,20 +67,26 @@ export default function BooksPage() {
         body: JSON.stringify({ bookId }),
       });
 
+      console.log('📡 Response status:', response.status);
+      const responseData = await response.json();
+      console.log('📡 Response data:', responseData);
+
       if (response.ok) {
         addToast({
           type: 'success',
           title: 'Success',
           message: 'Borrow request submitted successfully'
         });
+        fetchBooks(); // Refresh the books list
       } else {
         addToast({
           type: 'error',
           title: 'Error',
-          message: 'Failed to submit borrow request'
+          message: responseData.message || 'Failed to submit borrow request'
         });
       }
     } catch (error) {
+      console.error('❌ Error submitting borrow request:', error);
       addToast({
         type: 'error',
         title: 'Error',
